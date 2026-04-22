@@ -1,7 +1,6 @@
 from services.groq_client import GroqClient
 
-client = GroqClient()   # ✅ no need to pass API key
-
+client = GroqClient()  
 while True:
     text = input("Enter your question: ")
 

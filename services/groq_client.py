@@ -4,7 +4,7 @@ import time
 import logging
 from dotenv import load_dotenv
 
-# Load environment variables
+
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
@@ -50,8 +50,6 @@ class GroqClient:
                     timeout=15
                 )
 
-                # 🔍 Debug (remove later if you want)
-                # print("DEBUG:", response.text)
 
                 response.raise_for_status()
                 data = response.json()
@@ -62,16 +60,16 @@ class GroqClient:
                 logging.error(f"Attempt {attempt + 1} failed: {e}")
 
                 if attempt < 2:
-                    time.sleep(2 ** attempt)  # exponential backoff
+                    time.sleep(2 ** attempt) 
                 else:
                     return "❌ Error: API failed after retries"
 
 
-# 🚀 Run chatbot
+
 if __name__ == "__main__":
     client = GroqClient()
 
-    print("💬 Chatbot (type 'exit' to stop)\n")
+    print(" Chatbot (type 'exit' to stop)\n")
 
     while True:
         user_input = input("You: ")
