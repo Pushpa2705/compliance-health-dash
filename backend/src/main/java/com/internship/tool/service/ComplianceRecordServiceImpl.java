@@ -6,6 +6,8 @@ import com.internship.tool.exception.ValidationException;
 import com.internship.tool.repository.ComplianceRecordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,6 +37,10 @@ public class ComplianceRecordServiceImpl implements ComplianceRecordService {
     @Override
     public List<ComplianceRecord> getAll() {
         return repository.findAll();
+    }
+    @Override
+    public Page<ComplianceRecord> getAllPaginated(PageRequest pageRequest) {
+        return repository.findAll(pageRequest);
     }
 
     // ✅ UPDATE

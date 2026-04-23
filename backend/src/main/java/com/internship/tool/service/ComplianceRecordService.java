@@ -1,6 +1,9 @@
 package com.internship.tool.service;
 
 import com.internship.tool.entity.ComplianceRecord;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +19,8 @@ public interface ComplianceRecordService {
     ComplianceRecord update(Long id, ComplianceRecord record);
 
     void delete(Long id);
+
+    Page<ComplianceRecord> getAllPaginated(PageRequest pageRequest);
 
     List<ComplianceRecord> search(String keyword);
 
