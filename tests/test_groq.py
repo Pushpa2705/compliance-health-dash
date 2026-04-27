@@ -14,3 +14,8 @@ def test_categorise():
     assert "category" in data
     assert "confidence" in data
     assert "reasoning" in data
+
+
+if __name__ == "__main__":
+    test_categorise()
+    print("✅ Test Passed")

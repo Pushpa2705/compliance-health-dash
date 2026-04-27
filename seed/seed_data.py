@@ -1,34 +1,44 @@
-from services.chroma_client import ChromaService
+import json
+import chromadb
+from sentence_transformers import SentenceTransformer
 
-chroma = ChromaService()
+# 🔹 Load external JSON file
+with open("data/health_data.json", "r") as f:
+    data = json.load(f)
 
-documents = [
-    # Security
-    "Sensitive user data must be encrypted using AES-256 encryption.",
-    "Passwords should be hashed using bcrypt before storing in database.",
-    "Unauthorized access to admin panel is a critical security violation.",
+# 🔹 Init Chroma
+client = chromadb.PersistentClient(path="./data/chroma_db")
 
-    # Compliance
-    "All user activities must be logged for audit compliance.",
-    "System must follow GDPR rules for handling personal data.",
-    "Compliance requires proper documentation of all transactions.",
+collection = client.get_or_create_collection(
+    name="health_compliance"
+)
 
-    # Risk
-    "Missing encryption leads to high security risk.",
-    "Lack of monitoring increases operational risk.",
-    "Unpatched systems may lead to cyber attacks.",
+model = SentenceTransformer("all-MiniLM-L6-v2")
 
-    # Performance
-    "Slow database queries reduce system performance.",
-    "Caching frequently accessed data improves response time.",
-    "High latency affects user experience in dashboards.",
+documents = []
+metadatas = []
+ids = []
 
-    # Operations
-    "Daily backups are required for system reliability.",
-    "System uptime should be at least 99.9 percent.",
-    "Monitoring tools should track system health continuously."
-]
+# 🔹 Process data
+for item in data:
+    text = f"{item['title']}: {item['content']}"
 
-chroma.add_documents(documents)
+    documents.append(text)
+    metadatas.append({
+        "category": item["category"],
+        "title": item["title"]
+    })
+    ids.append(item["id"])
 
-print("✅ ChromaDB seeded successfully")
+# 🔹 Create embeddings
+embeddings = model.encode(documents).tolist()
+
+# 🔹 Insert into DB
+collection.add(
+    documents=documents,
+    embeddings=embeddings,
+    metadatas=metadatas,
+    ids=ids
+)
+
+print("✅ External JSON data inserted into ChromaDB!")
