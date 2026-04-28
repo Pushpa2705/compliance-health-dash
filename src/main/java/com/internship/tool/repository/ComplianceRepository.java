@@ -17,4 +17,15 @@ public interface ComplianceRepository extends JpaRepository<Compliance, Long> {
     @Query("SELECT c FROM Compliance c WHERE c.createdAt BETWEEN :start AND :end")
     List<Compliance> findByDateRange(@Param("start") LocalDateTime start,
                                      @Param("end") LocalDateTime end);
+
+    List<Compliance> findByTitleContainingIgnoreCaseAndDeletedFalse(String q);
+@Query("SELECT COUNT(c) FROM Compliance c WHERE c.deleted = false")
+long countActive();
+
+@Query("SELECT COUNT(c) FROM Compliance c WHERE c.status = 'OPEN' AND c.deleted = false")
+long countOpen();
+
+@Query("SELECT COUNT(c) FROM Compliance c WHERE c.status = 'CLOSED' AND c.deleted = false")
+long countClosed();
+
 }

@@ -5,7 +5,7 @@ import com.internship.tool.service.ComplianceService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import com.internship.tool.entity.AuditLog;
-
+import java.util.Map;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class ComplianceController {
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        service.delete(id);
+        service.softDelete(id);
     }
 
     @GetMapping("/status/{status}")
@@ -45,5 +45,22 @@ public class ComplianceController {
             @RequestParam LocalDateTime end
     ) {
         return service.getByDateRange(start, end);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Compliance> update(@PathVariable Long id,
+           @RequestBody Compliance compliance) 
+    {
+    return ResponseEntity.ok(service.update(id, compliance));
+    }
+    @GetMapping("/search")
+    public ResponseEntity<List<Compliance>> search(@RequestParam String q) 
+    {
+    return ResponseEntity.ok(service.search(q));
+}
+
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Long>> stats()
+    {
+    return ResponseEntity.ok(service.getStats());
     }
 }

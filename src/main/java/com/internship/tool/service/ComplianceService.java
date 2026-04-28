@@ -4,7 +4,8 @@ import com.internship.tool.entity.Compliance;
 import com.internship.tool.entity.AuditLog;
 import com.internship.tool.repository.ComplianceRepository;
 import com.internship.tool.repository.AuditLogRepository;
-
+import java.util.Map;
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -41,6 +42,37 @@ public class ComplianceService {
 
         return saved;
     }
+    public Compliance update(Long id, Compliance updated) {
+    Compliance existing = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Not found"));
+
+    existing.setTitle(updated.getTitle());
+    existing.setDescription(updated.getDescription());
+    existing.setStatus(updated.getStatus());
+    existing.setScore(updated.getScore());
+
+    return repository.save(existing);
+}
+
+public void softDelete(Long id) {
+    Compliance compliance = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Not found"));
+
+    compliance.setDeleted(true);
+    repository.save(compliance);
+}
+
+public List<Compliance> search(String q) {
+    return repository.findByTitleContainingIgnoreCaseAndDeletedFalse(q);
+}
+
+public Map<String, Long> getStats() {
+    Map<String, Long> stats = new HashMap<>();
+    stats.put("total", repository.countActive());
+    stats.put("open", repository.countOpen());
+    stats.put("closed", repository.countClosed());
+    return stats;
+}
 
     public void delete(Long id) {
     Compliance existing = repository.findById(id).orElse(null);

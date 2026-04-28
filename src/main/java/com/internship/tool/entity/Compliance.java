@@ -27,6 +27,8 @@ public void prePersist() {
     this.createdAt = LocalDateTime.now();
     this.updatedAt = LocalDateTime.now();
 }
+@Column(name = "deleted")
+private Boolean deleted = false;
 
 @PreUpdate
 public void preUpdate() {
@@ -91,5 +93,13 @@ public void preUpdate() {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 }
