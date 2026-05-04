@@ -19,21 +19,34 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            // 🔥 Disable CSRF (required for APIs)
+            // ✅ Disable CSRF for REST APIs
             .csrf(csrf -> csrf.disable())
 
-            // 🔥 Stateless session (JWT)
+            // ✅ Stateless (JWT-based)
             .sessionManagement(session -> session
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
-            // 🔐 Authorization rules
+            // ✅ Authorization rules
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/**").permitAll()   // allow login
-                    .anyRequest().authenticated()              // protect all others
+                    // Public endpoints
+                    .requestMatchers("/auth/**").permitAll()
+
+                    // File APIs (Day 9 requirement)
+                    .requestMatchers("/api/files/**").permitAll()
+
+                    // Swagger (important later)
+                    .requestMatchers(
+                            "/v3/api-docs/**",
+                            "/swagger-ui/**",
+                            "/swagger-ui.html"
+                    ).permitAll()
+
+                    // All others require JWT
+                    .anyRequest().authenticated()
             )
 
-            // 🔁 Add JWT filter
+            // ✅ JWT filter
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
