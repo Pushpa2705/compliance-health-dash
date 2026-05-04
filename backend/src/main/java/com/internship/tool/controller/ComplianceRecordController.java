@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/compliance")
 @RequiredArgsConstructor
@@ -56,7 +55,7 @@ public class ComplianceRecordController {
         );
     }
 
-    // ✅ GET BY ID (404 handled in service)
+    // ✅ GET BY ID
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ComplianceRecordDTO>> getById(@PathVariable Long id) {
 
@@ -71,13 +70,14 @@ public class ComplianceRecordController {
         );
     }
 
-    // ✅ UPDATE
+    // ✅ UPDATE (fixed → use DTO instead of Entity)
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ComplianceRecordDTO>> update(
             @PathVariable Long id,
-            @RequestBody ComplianceRecord record
+            @Valid @RequestBody ComplianceRecordDTO dto
     ) {
-        ComplianceRecord updated = service.update(id, record);
+        ComplianceRecord updated = service.update(id, ComplianceRecordMapper.toEntity(dto));
+
         return ResponseEntity.ok(
                 ApiResponse.<ComplianceRecordDTO>builder()
                         .success(true)
@@ -87,18 +87,19 @@ public class ComplianceRecordController {
         );
     }
 
-    // ✅ DELETE (204)
+    // ✅ DELETE (204 improved)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
 
         service.delete(id);
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<>(
                 ApiResponse.<Void>builder()
                         .success(true)
                         .message("Record deleted successfully")
                         .data(null)
-                        .build()
+                        .build(),
+                HttpStatus.NO_CONTENT
         );
     }
 }

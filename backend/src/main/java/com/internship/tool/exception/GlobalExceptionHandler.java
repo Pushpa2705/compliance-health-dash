@@ -1,43 +1,80 @@
 package com.internship.tool.exception;
 
+import com.internship.tool.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // ✅ 404 - Resource Not Found
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handleNotFound(ResourceNotFoundException ex) {
-        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    public ResponseEntity<ApiResponse<Object>> handleNotFound(ResourceNotFoundException ex) {
+
+        return new ResponseEntity<>(
+                ApiResponse.<Object>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .data(null)
+                        .timestamp(LocalDateTime.now())
+                        .build(),
+                HttpStatus.NOT_FOUND
+        );
     }
 
+    // ✅ 400 - Custom Validation Exception
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<?> handleValidation(ValidationException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    public ResponseEntity<ApiResponse<Object>> handleValidation(ValidationException ex) {
+
+        return new ResponseEntity<>(
+                ApiResponse.<Object>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .data(null)
+                        .timestamp(LocalDateTime.now())
+                        .build(),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<?> handleBadRequest(BadRequestException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    // ✅ 400 - @Valid validation errors
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMethodValidation(MethodArgumentNotValidException ex) {
+
+        String error = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                .findFirst()
+                .orElse("Validation error");
+
+        return new ResponseEntity<>(
+                ApiResponse.<Object>builder()
+                        .success(false)
+                        .message(error)
+                        .data(null)
+                        .timestamp(LocalDateTime.now())
+                        .build(),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
+    // ✅ 500 - Generic Error
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGeneric(Exception ex) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong");
-    }
+    public ResponseEntity<ApiResponse<Object>> handleGeneric(Exception ex) {
 
-    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", status.value());
-        body.put("error", status.getReasonPhrase());
-        body.put("message", message);
-
-        return new ResponseEntity<>(body, status);
+        return new ResponseEntity<>(
+                ApiResponse.<Object>builder()
+                        .success(false)
+                        .message("Something went wrong")
+                        .data(null)
+                        .timestamp(LocalDateTime.now())
+                        .build(),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 }

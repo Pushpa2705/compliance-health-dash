@@ -14,19 +14,18 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ComplianceRecordServiceImpl implements ComplianceRecordService {
+public class ComplianceRecordServiceImpl {
 
     private final ComplianceRecordRepository repository;
 
     // ✅ CREATE
-    @Override
     public ComplianceRecord create(ComplianceRecord record) {
         validate(record);
         return repository.save(record);
     }
 
     // ✅ GET BY ID
-    @Override
+   
     public ComplianceRecord getById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() ->
@@ -34,17 +33,17 @@ public class ComplianceRecordServiceImpl implements ComplianceRecordService {
     }
 
     // ✅ GET ALL
-    @Override
+    
     public List<ComplianceRecord> getAll() {
         return repository.findAll();
     }
-    @Override
+    
     public Page<ComplianceRecord> getAllPaginated(PageRequest pageRequest) {
         return repository.findAll(pageRequest);
     }
 
     // ✅ UPDATE
-    @Override
+   
     public ComplianceRecord update(Long id, ComplianceRecord record) {
         ComplianceRecord existing = getById(id);
 
@@ -60,14 +59,14 @@ public class ComplianceRecordServiceImpl implements ComplianceRecordService {
     }
 
     // ✅ DELETE
-    @Override
+   
     public void delete(Long id) {
         ComplianceRecord existing = getById(id);
         repository.delete(existing);
     }
 
     // ✅ SEARCH
-    @Override
+ 
     public List<ComplianceRecord> search(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             throw new ValidationException("Search keyword cannot be empty");
@@ -76,7 +75,7 @@ public class ComplianceRecordServiceImpl implements ComplianceRecordService {
     }
 
     // ✅ FILTER BY STATUS
-    @Override
+  
     public List<ComplianceRecord> filterByStatus(String status) {
         if (status == null || status.trim().isEmpty()) {
             throw new ValidationException("Status cannot be empty");
@@ -85,7 +84,7 @@ public class ComplianceRecordServiceImpl implements ComplianceRecordService {
     }
 
     // ✅ FILTER BY DATE RANGE
-    @Override
+
     public List<ComplianceRecord> filterByDateRange(LocalDateTime start, LocalDateTime end) {
         if (start == null || end == null) {
             throw new ValidationException("Date range cannot be null");
