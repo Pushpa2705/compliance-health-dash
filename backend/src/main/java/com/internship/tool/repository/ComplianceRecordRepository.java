@@ -16,4 +16,6 @@ public interface ComplianceRecordRepository extends JpaRepository<ComplianceReco
     List<ComplianceRecord> findByStatus(@Param("status") String status);
 
     List<ComplianceRecord> findByCreatedAtBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    List<ComplianceRecord> findByDueDateBetween(LocalDateTime start, LocalDateTime end);
+    List<ComplianceRecord> findByTitleContainingIgnoreCase(String keyword);
 }
